@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign in</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Public+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body data-page-title="Sign in">
+  <main class="login-wrap">
+    <div class="login-brand">
+      <span class="rx-mark big">R<sub>x</sub></span>
+      <h1 data-clinic-name>Clinic</h1>
+      <p>Outpatient Department</p>
+    </div>
+
+    <form id="login-form" class="card login-card" autocomplete="off">
+      <div class="field">
+        <label for="username">Username</label>
+        <input id="username" name="username" type="text" required autocapitalize="none" spellcheck="false" placeholder="dr.sharma" />
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" required placeholder="••••••••" />
+      </div>
+      <button class="btn" type="submit" id="login-btn">Sign in</button>
+      <div id="login-error" class="form-error" role="alert"></div>
+    </form>
+
+
+    <div class="login-foot">Runs locally · data is saved in a local SQLite file</div>
+  </main>
+
+  <div id="toast" aria-live="polite"></div>
+  <script src="/js/common.js"></script>
+  <script src="/js/login.js"></script>
+</body>
+</html>

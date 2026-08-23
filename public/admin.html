@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Administration</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Public+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body data-role="admin" data-page-title="Administration">
+  <header class="topbar">
+    <div class="brand">
+      <span class="rx-mark">R<sub>x</sub></span>
+      <span class="brand-name" data-clinic-name>Clinic</span>
+      <span class="brand-tag">Administration</span>
+    </div>
+    <div class="topbar-user">
+      <div class="user-chip">
+        <div class="name" id="tb-name"></div>
+        <div class="sub"><span class="role-pill" id="tb-role"></span></div>
+      </div>
+      <button class="btn-quiet" id="tb-logout" type="button">Sign out</button>
+    </div>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button class="tab" role="tab" data-tab="staff" aria-selected="true">Staff</button>
+    <button class="tab" role="tab" data-tab="clinic" aria-selected="false">Clinic</button>
+    <button class="tab" role="tab" data-tab="overview" aria-selected="false">Overview</button>
+  </nav>
+
+  <main class="page">
+    <!-- ============================ Staff ============================ -->
+    <section id="tab-staff" data-section>
+      <div class="section-head">
+        <h2>Doctors &amp; pharmacists</h2>
+        <div class="section-tools">
+          <input class="search-input" id="staff-search" type="search" placeholder="Search name or username" />
+          <button class="btn-ghost btn-sm" id="staff-removed-toggle" type="button" aria-pressed="false">Show removed</button>
+          <button class="btn" id="add-staff-btn" type="button">Add staff</button>
+        </div>
+      </div>
+      <p class="muted small" style="margin:-4px 0 12px">
+        Every clinical account is created here. Staff are deactivated rather than deleted,
+        so their prescriptions and bills stay intact.
+      </p>
+      <div class="card">
+        <div class="table-scroll">
+          <table class="data">
+            <thead>
+              <tr>
+                <th>Name</th><th>Username</th><th>Role</th><th>Specialty</th>
+                <th>Status</th><th>Added</th><th></th>
+              </tr>
+            </thead>
+            <tbody id="staff-tbody"></tbody>
+          </table>
+        </div>
+        <div id="staff-empty" class="empty" hidden>
+          <strong>No staff yet</strong>
+          Add the clinic's first doctor or pharmacist to get started.
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ Clinic settings ============================ -->
+    <section id="tab-clinic" data-section hidden>
+      <div class="section-head">
+        <h2>Clinic details</h2>
+      </div>
+      <p class="muted small" style="margin:-4px 0 12px">
+        The clinic name appears throughout the app. Everything here is printed on bills
+        and prescriptions.
+      </p>
+      <form class="card card-pad" id="clinic-form" autocomplete="off">
+        <div class="form-grid">
+          <div class="field span-2">
+            <label for="c-name">Clinic name</label>
+            <input id="c-name" required maxlength="120" placeholder="Sunrise Clinic" />
+          </div>
+          <div class="field span-2">
+            <label for="c-address">Address</label>
+            <input id="c-address" maxlength="240" placeholder="14 Linden Road, Bandra West, Mumbai 400050" />
+          </div>
+          <div class="field">
+            <label for="c-phone">Phone</label>
+            <input id="c-phone" maxlength="120" placeholder="022 2640 1122" />
+          </div>
+          <div class="field">
+            <label for="c-email">Email</label>
+            <input id="c-email" maxlength="120" placeholder="care@clinic.example" />
+          </div>
+          <div class="field span-2">
+            <label for="c-regno">Registration number</label>
+            <input id="c-regno" maxlength="120" placeholder="MH/CLIN/2019/4471" />
+          </div>
+        </div>
+        <div id="clinic-error" class="form-error" role="alert"></div>
+        <div style="display:flex;justify-content:flex-end;margin-top:14px">
+          <button class="btn" type="submit" id="clinic-save">Save clinic details</button>
+        </div>
+      </form>
+
+      <div class="section-head" style="margin-top:22px">
+        <h2>Dropdown suggestions</h2>
+      </div>
+      <p class="muted small" style="margin:-4px 0 12px">
+        One per line. These are suggestions only — staff can always type a value that
+        isn't listed, so nobody is ever blocked by a missing option.
+      </p>
+      <form class="card card-pad" id="lists-form" autocomplete="off">
+        <div class="form-grid">
+          <div class="field">
+            <label for="l-specialties">Doctor specialties</label>
+            <textarea id="l-specialties" rows="9"></textarea>
+          </div>
+          <div class="field">
+            <label for="l-categories">Medicine categories</label>
+            <textarea id="l-categories" rows="9"></textarea>
+          </div>
+          <div class="field span-2">
+            <label for="l-frequencies">Prescription frequencies</label>
+            <textarea id="l-frequencies" rows="8"></textarea>
+          </div>
+        </div>
+        <div id="lists-error" class="form-error" role="alert"></div>
+        <div style="display:flex;justify-content:flex-end;margin-top:14px">
+          <button class="btn" type="submit" id="lists-save">Save lists</button>
+        </div>
+      </form>
+
+      <div class="section-head" style="margin-top:22px">
+        <h2>Lab test catalogue</h2>
+        <div class="section-tools">
+          <input class="search-input" id="test-cat-search" type="search" placeholder="Search tests" />
+          <button class="btn-ghost btn-sm" id="tests-removed-toggle" type="button" aria-pressed="false">Show removed</button>
+          <button class="btn" id="add-test-btn" type="button">Add test</button>
+        </div>
+      </div>
+      <p class="muted small" style="margin:-4px 0 12px">
+        Tests doctors can order. They print on the prescription; they are not billed and
+        no results are recorded here. Doctors can also type a test that isn't listed.
+      </p>
+      <div class="card">
+        <div class="table-scroll">
+          <table class="data">
+            <thead><tr><th>Test</th><th>Category</th><th></th></tr></thead>
+            <tbody id="tests-tbody"></tbody>
+          </table>
+        </div>
+        <div id="tests-cat-empty" class="empty" hidden>
+          <strong>No tests found</strong>
+          Try a different search, or add a test.
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ Overview ============================ -->
+    <section id="tab-overview" data-section hidden>
+      <div class="section-head">
+        <h2>Clinic at a glance</h2>
+        <button class="btn-ghost btn-sm" id="stats-refresh" type="button">Refresh</button>
+      </div>
+      <p class="muted small" style="margin:-4px 0 12px">
+        Counts only. Administration has no access to patient records, prescriptions or bills.
+      </p>
+      <div class="card">
+        <div class="table-scroll">
+          <table class="data">
+            <thead><tr><th>Measure</th><th class="num" style="text-align:right">Count</th></tr></thead>
+            <tbody id="stats-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal-overlay" id="modal"><div class="modal-card"></div></div>
+  <div id="toast" aria-live="polite"></div>
+
+  <script src="/js/common.js"></script>
+  <script src="/js/admin.js"></script>
+</body>
+</html>

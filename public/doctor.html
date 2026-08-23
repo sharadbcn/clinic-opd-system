@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Doctor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Public+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body data-role="doctor" data-page-title="Doctor">
+  <header class="topbar">
+    <div class="brand">
+      <span class="rx-mark">R<sub>x</sub></span>
+      <span class="brand-name" data-clinic-name>Clinic</span>
+      <span class="brand-tag">OPD</span>
+    </div>
+    <div class="topbar-user">
+      <div class="user-chip">
+        <div class="name" id="tb-name"></div>
+        <div class="sub"><span class="role-pill" id="tb-role"></span></div>
+      </div>
+      <button class="btn-quiet" id="tb-logout" type="button">Sign out</button>
+    </div>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button class="tab" role="tab" data-tab="patients" aria-selected="true">Patients</button>
+    <button class="tab" role="tab" data-tab="compose" aria-selected="false">New prescription</button>
+    <button class="tab" role="tab" data-tab="prescriptions" aria-selected="false">Prescriptions &amp; bills</button>
+  </nav>
+
+  <main class="page">
+    <!-- ============================ Patients ============================ -->
+    <section id="tab-patients" data-section>
+      <div id="patients-list-view">
+        <div class="section-head">
+          <h2>Patient registry</h2>
+          <div class="section-tools">
+            <div class="seg" id="patient-scope">
+              <button type="button" data-scope="mine" aria-pressed="true">My patients</button>
+              <button type="button" data-scope="all" aria-pressed="false">All clinic</button>
+            </div>
+            <input class="search-input" id="patient-search" type="search" placeholder="Search name, code or phone" />
+            <button class="btn-ghost btn-sm" id="patients-removed-toggle" type="button" aria-pressed="false">Show removed</button>
+            <button class="btn" id="add-patient-btn" type="button">Add patient</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="table-scroll">
+            <table class="data">
+              <thead>
+                <tr>
+                  <th>Code</th><th>Name</th><th>Age / Sex</th><th>Phone</th>
+                  <th class="num" style="text-align:right">Visits</th><th>Last visit</th><th></th>
+                </tr>
+              </thead>
+              <tbody id="patients-tbody"></tbody>
+            </table>
+          </div>
+          <div id="patients-empty" class="empty" hidden>
+            <strong>No patients found</strong>
+            Try a different search, or add a new patient.
+          </div>
+        </div>
+      </div>
+
+      <div id="patient-detail-view" hidden>
+        <div class="section-head">
+          <button class="btn-quiet" id="patient-back" type="button">← All patients</button>
+        </div>
+        <div class="card card-pad" id="patient-detail-card"></div>
+      </div>
+    </section>
+
+    <!-- ============================ Composer ============================ -->
+    <section id="tab-compose" data-section hidden>
+      <div class="section-head">
+        <h2 id="compose-title">New prescription</h2>
+      </div>
+      <div id="edit-banner" class="edit-banner" hidden>
+        <span>Editing <b class="mono" id="edit-rx-number"></b> — it is still waiting at the pharmacy.</span>
+        <button class="btn-quiet" id="edit-cancel" type="button">Cancel edit</button>
+      </div>
+      <form id="compose-form" class="card card-pad" autocomplete="off">
+        <div class="form-grid">
+          <div class="field">
+            <label for="rx-patient">Patient</label>
+            <select id="rx-patient" required></select>
+          </div>
+          <div class="field">
+            <label for="rx-fee">Consultation fee (₹)</label>
+            <input id="rx-fee" type="number" min="0" step="1" value="0" required />
+          </div>
+          <div class="field span-2">
+            <label for="rx-diagnosis">Diagnosis</label>
+            <input id="rx-diagnosis" type="text" required placeholder="e.g. Viral fever with body ache" />
+          </div>
+          <div class="field span-2">
+            <label for="rx-notes">Advice / notes (optional)</label>
+            <textarea id="rx-notes" placeholder="Rest, hydration, follow-up instructions…"></textarea>
+          </div>
+        </div>
+
+        <div class="section-head" style="margin-top:18px">
+          <h2 style="font-size:14px">Medicines</h2>
+          <div class="section-tools">
+            <button class="btn-quiet btn-sm" id="new-med-btn" type="button">Not in the list?</button>
+            <button class="btn-ghost btn-sm" id="add-item-btn" type="button">+ Add medicine</button>
+          </div>
+        </div>
+        <div class="composer-items">
+          <table>
+            <thead>
+              <tr>
+                <th style="min-width:220px">Medicine</th>
+                <th style="min-width:110px">Dosage</th>
+                <th style="min-width:150px">Frequency</th>
+                <th style="width:80px">Days</th>
+                <th style="width:112px">Qty</th>
+                <th style="width:44px"></th>
+              </tr>
+            </thead>
+            <tbody id="items-tbody"></tbody>
+          </table>
+        </div>
+
+        <div class="section-head" style="margin-top:18px">
+          <h2 style="font-size:14px">Lab tests</h2>
+          <button class="btn-ghost btn-sm" id="add-tests-btn" type="button">+ Add lab tests</button>
+        </div>
+        <div id="tests-chosen" class="chip-list"></div>
+        <p class="muted small" id="tests-empty">No tests ordered. Any you add are printed on the prescription.</p>
+
+        <div class="composer-total">
+          <span>Estimated medicines + fee — final bill is generated at the pharmacy</span>
+          <span class="amount" id="compose-total">₹0.00</span>
+        </div>
+
+        <div id="compose-warn" class="composer-warn"></div>
+        <div id="compose-error" class="form-error" role="alert"></div>
+        <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:16px">
+          <button class="btn" type="button" id="compose-print">Save &amp; print</button>
+          <button class="btn" type="submit" id="compose-submit">Send to pharmacy</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- ============================ Prescriptions ============================ -->
+    <section id="tab-prescriptions" data-section hidden>
+      <div class="section-head">
+        <h2>Prescriptions &amp; bills</h2>
+        <div class="section-tools">
+          <div class="seg" id="rx-filter">
+            <button type="button" data-status="" aria-pressed="true">All</button>
+            <button type="button" data-status="pending" aria-pressed="false">Pending</button>
+            <button type="button" data-status="issued" aria-pressed="false">Issued</button>
+          </div>
+          <button class="btn-ghost btn-sm" id="rx-removed-toggle" type="button" aria-pressed="false">Show removed</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="table-scroll">
+          <table class="data">
+            <thead>
+              <tr>
+                <th>Rx No.</th><th>Date</th><th>Patient</th><th>Diagnosis</th>
+                <th class="num" style="text-align:right">Items</th><th>Status</th>
+                <th class="num" style="text-align:right">Bill</th><th></th>
+              </tr>
+            </thead>
+            <tbody id="rx-tbody"></tbody>
+          </table>
+        </div>
+        <div id="rx-empty" class="empty" hidden>
+          <strong>Nothing here yet</strong>
+          Prescriptions you write will appear here with their bills.
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Suggestions the admin maintains; any other value can still be typed. -->
+  <datalist id="category-list"></datalist>
+
+  <div class="modal-overlay" id="modal"><div class="modal-card"></div></div>
+  <div id="toast" aria-live="polite"></div>
+
+  <script src="/js/common.js"></script>
+  <script src="/js/doctor.js"></script>
+</body>
+</html>

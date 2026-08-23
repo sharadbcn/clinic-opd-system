@@ -1,0 +1,858 @@
+/* ================================================================
+   Sunrise Clinic OPD — stylesheet
+   Palette: chart-paper neutrals, fountain-ink blue (doctor),
+   dispensary green (pharmacy). Type: Archivo / Public Sans / IBM Plex Mono.
+   ================================================================ */
+
+:root {
+  --paper: #f2f4f1;         /* chart paper */
+  --sheet: #ffffff;         /* card / pad surface */
+  --ink: #182530;           /* primary text, near-black ink */
+  --ink-soft: #56656e;      /* secondary text */
+  --line: #d9dfd9;          /* borders */
+  --line-soft: #e7ebe6;
+
+  --doctor: #0f5470;        /* fountain-pen ink blue */
+  --doctor-deep: #0b3e53;
+  --doctor-wash: #e9f1f5;
+
+  --pharmacy: #256b4f;      /* dispensary green */
+  --pharmacy-deep: #1a4f3a;
+  --pharmacy-wash: #e7f1ec;
+
+  --admin: #4b4a63;         /* administration slate */
+  --admin-deep: #35344a;
+  --admin-wash: #eeedf3;
+
+  --pending: #9a6510;
+  --pending-wash: #f9f0dd;
+  --issued: #256b4f;
+  --issued-wash: #e7f1ec;
+  --danger: #a8433d;
+  --danger-wash: #f8ecea;
+
+  --accent: var(--doctor);
+  --accent-deep: var(--doctor-deep);
+  --accent-wash: var(--doctor-wash);
+
+  --font-display: "Archivo", system-ui, sans-serif;
+  --font-body: "Public Sans", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  --radius: 10px;
+  --radius-sm: 8px;
+  --shadow: 0 1px 2px rgba(24, 37, 48, 0.05), 0 8px 24px rgba(24, 37, 48, 0.06);
+}
+
+body[data-role="doctor"] { --accent: var(--doctor); --accent-deep: var(--doctor-deep); --accent-wash: var(--doctor-wash); }
+body[data-role="pharmacist"] { --accent: var(--pharmacy); --accent-deep: var(--pharmacy-deep); --accent-wash: var(--pharmacy-wash); }
+body[data-role="admin"] { --accent: var(--admin); --accent-deep: var(--admin-deep); --accent-wash: var(--admin-wash); }
+
+* { box-sizing: border-box; }
+
+/* The hidden attribute must win over any author display rule. Without this,
+   `display: flex` on a class silently defeats `el.hidden = true`. */
+[hidden] { display: none !important; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+h1, h2, h3 { font-family: var(--font-display); margin: 0; }
+p { margin: 0 0 8px; }
+a { color: var(--accent); }
+
+.mono { font-family: var(--font-mono); font-size: 0.93em; letter-spacing: -0.01em; }
+.muted { color: var(--ink-soft); }
+.small { font-size: 12.5px; }
+
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+
+/* ---------------------------------------------------------------- top bar */
+.topbar {
+  background: var(--sheet);
+  border-bottom: 3px solid var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 22px;
+}
+.brand { display: flex; align-items: center; gap: 10px; }
+.brand-name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: 0.01em;
+}
+.brand-tag {
+  font-family: var(--font-display);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  color: var(--ink-soft);
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  padding: 2px 6px;
+  text-transform: uppercase;
+}
+.rx-mark {
+  display: inline-flex;
+  align-items: baseline;
+  justify-content: center;
+  background: var(--accent);
+  color: #fff;
+  font-family: var(--font-display);
+  font-weight: 700;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  font-size: 16px;
+  line-height: 32px;
+}
+.rx-mark sub { font-size: 10px; line-height: 1; transform: translateY(3px); }
+.rx-mark.big { width: 52px; height: 52px; font-size: 26px; line-height: 52px; border-radius: 12px; }
+.rx-mark.big sub { font-size: 15px; transform: translateY(5px); }
+
+.topbar-user { display: flex; align-items: center; gap: 12px; }
+.user-chip { text-align: right; line-height: 1.25; }
+.user-chip .name { font-weight: 600; font-size: 13.5px; }
+.role-pill {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent-deep);
+  background: var(--accent-wash);
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+/* ---------------------------------------------------------------- tabs & layout */
+.tabs {
+  display: flex;
+  gap: 4px;
+  padding: 0 22px;
+  background: var(--sheet);
+  border-bottom: 1px solid var(--line);
+  overflow-x: auto;
+}
+.tab {
+  appearance: none;
+  background: none;
+  border: none;
+  border-bottom: 2.5px solid transparent;
+  font-family: var(--font-display);
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  padding: 11px 14px 9px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.tab:hover { color: var(--ink); }
+.tab[aria-selected="true"] { color: var(--accent-deep); border-bottom-color: var(--accent); }
+
+.page { max-width: 1080px; margin: 0 auto; padding: 22px 22px 56px; }
+.section-head { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin-bottom: 14px; }
+.section-head h2 { font-size: 17px; font-weight: 600; }
+.section-tools { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+.card {
+  background: var(--sheet);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+.card-pad { padding: 18px; }
+
+/* ---------------------------------------------------------------- buttons */
+.btn {
+  appearance: none;
+  border: 1px solid var(--accent-deep);
+  background: var(--accent);
+  color: #fff;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 13.5px;
+  padding: 8px 15px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: filter 120ms ease;
+}
+.btn:hover { filter: brightness(1.07); }
+.btn:disabled { opacity: 0.55; cursor: not-allowed; }
+.btn-ghost {
+  background: var(--sheet);
+  color: var(--accent-deep);
+  border: 1px solid var(--line);
+}
+.btn-ghost:hover { background: var(--accent-wash); filter: none; }
+.btn-quiet {
+  background: none;
+  border: none;
+  color: var(--ink-soft);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  padding: 6px 8px;
+  border-radius: 6px;
+}
+.btn-quiet:hover { color: var(--ink); background: var(--line-soft); }
+.btn-sm { padding: 5px 10px; font-size: 12.5px; border-radius: 7px; }
+
+/* ---------------------------------------------------------------- forms */
+.field { display: flex; flex-direction: column; gap: 5px; }
+.field label {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+/* Text-like fields fill their container. Checkboxes and radios must be
+   excluded, or they stretch to full width with a border and padding. */
+input:not([type="checkbox"]):not([type="radio"]), select, textarea {
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--ink);
+  background: var(--sheet);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  width: 100%;
+}
+
+input[type="checkbox"], input[type="radio"] {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  flex: none;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+input:focus, select:focus, textarea:focus { outline: 2px solid var(--accent); outline-offset: 0; border-color: var(--accent); }
+textarea { resize: vertical; min-height: 64px; }
+input[type="number"] { font-family: var(--font-mono); }
+.form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+.form-grid .span-2 { grid-column: span 2; }
+.form-error {
+  display: none;
+  background: var(--danger-wash);
+  color: var(--danger);
+  border: 1px solid var(--danger);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  font-size: 13px;
+  margin-top: 12px;
+}
+.form-error.show { display: block; }
+.search-input { max-width: 260px; }
+
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: var(--radius-sm); overflow: hidden; background: var(--sheet); }
+.seg button {
+  appearance: none;
+  border: none;
+  background: none;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 12.5px;
+  color: var(--ink-soft);
+  padding: 7px 13px;
+  cursor: pointer;
+}
+.seg button + button { border-left: 1px solid var(--line); }
+.seg button[aria-pressed="true"] { background: var(--accent-wash); color: var(--accent-deep); }
+
+/* ---------------------------------------------------------------- tables */
+.table-scroll { overflow-x: auto; border-radius: var(--radius); }
+table.data { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+table.data th {
+  font-family: var(--font-display);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  text-align: left;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--line);
+  background: var(--sheet);
+  white-space: nowrap;
+}
+table.data td { padding: 11px 14px; border-bottom: 1px solid var(--line-soft); vertical-align: middle; }
+table.data tr:last-child td { border-bottom: none; }
+table.data .num { text-align: right; font-family: var(--font-mono); font-size: 13px; white-space: nowrap; }
+tr.rowlink { cursor: pointer; }
+tr.rowlink:hover td { background: var(--accent-wash); }
+tr.low-row td { background: #fdf7ef; }
+tr.out-row td { background: var(--danger-wash); }
+
+.empty {
+  text-align: center;
+  color: var(--ink-soft);
+  padding: 38px 16px;
+  font-size: 13.5px;
+}
+.empty strong { display: block; font-family: var(--font-display); color: var(--ink); margin-bottom: 4px; }
+
+/* ---------------------------------------------------------------- pills & badges */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.pill::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.pill-pending { color: var(--pending); background: var(--pending-wash); }
+.pill-issued { color: var(--issued); background: var(--issued-wash); }
+
+.badge {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  padding: 2px 8px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.badge-low { color: var(--pending); background: var(--pending-wash); }
+.badge-out { color: var(--danger); background: var(--danger-wash); }
+.badge-ok { color: var(--ink-soft); background: var(--line-soft); }
+
+/* ---------------------------------------------------------------- Rx pad (signature) */
+.rx-pad {
+  position: relative;
+  background: var(--sheet);
+  border: 1px solid var(--line);
+  border-top: 5px solid var(--accent);
+  border-radius: 6px;
+  padding: 20px 22px 18px;
+  overflow: hidden;
+}
+.rx-pad::before {
+  content: "";
+  position: absolute;
+  top: 4px;
+  left: 0;
+  right: 0;
+  height: 1.5px;
+  background: var(--accent);
+}
+.rx-water {
+  position: absolute;
+  top: 40px;
+  right: 20px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 88px;
+  line-height: 1;
+  color: var(--accent);
+  opacity: 0.06;
+  pointer-events: none;
+  user-select: none;
+}
+.rx-water sub { font-size: 48px; }
+.rx-clinic-row { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+.rx-clinic {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent-deep);
+}
+.rx-clinic span { display: block; font-weight: 500; letter-spacing: 0.02em; text-transform: none; color: var(--ink-soft); font-size: 12px; }
+.rx-doctor { text-align: right; font-size: 13px; }
+.rx-doctor .name { font-weight: 600; }
+.rx-meta {
+  display: grid;
+  grid-template-columns: repeat(4, auto);
+  justify-content: start;
+  gap: 6px 34px;
+  border-top: 1px solid var(--line-soft);
+  border-bottom: 1px solid var(--line-soft);
+  padding: 10px 0;
+  margin-bottom: 14px;
+}
+.rx-meta .field-ro label {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 1px;
+}
+.rx-meta .field-ro div { font-size: 13.5px; font-weight: 500; }
+/* A plain labelled line, used for the patient summary at the top of the
+   dispensing and bill modals. */
+.rx-diagnosis { margin-bottom: 12px; font-size: 13.5px; }
+.rx-diagnosis b { font-weight: 600; }
+
+/* Diagnosis and Advice: one row each, the label above its text, both banded so
+   they read as the written part of the sheet before the tables start. */
+.rx-lines { display: grid; gap: 8px; margin: 4px 0 16px; }
+.rx-line {
+  border-radius: var(--radius-sm);
+  background: var(--paper);
+  padding: 9px 14px;
+}
+.rx-line-label {
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--accent-deep);
+  margin-bottom: 3px;
+}
+.rx-line-text { font-size: 13.5px; color: var(--ink); line-height: 1.45; }
+
+/* Clinic details along the foot of every printed page. */
+.print-footer { display: none; }
+.print-footer-name {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+.print-footer-details { display: block; margin-top: 2px; }
+
+.rx-items { width: 100%; border-collapse: collapse; margin-bottom: 12px; }
+.rx-items th {
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  text-align: left;
+  padding: 6px 8px 6px 0;
+  border-bottom: 1px solid var(--line);
+}
+.rx-items td { padding: 8px 8px 8px 0; border-bottom: 1px dashed var(--line-soft); font-size: 13.5px; vertical-align: top; }
+.rx-items tr:last-child td { border-bottom: none; }
+.rx-items .med-name { font-weight: 600; }
+.rx-items .med-sub { color: var(--ink-soft); font-size: 12.5px; margin-top: 1px; }
+.rx-foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; font-size: 13px; }
+
+/* ---------------------------------------------------------------- invoice block */
+.invoice { border: 1px solid var(--line); border-radius: var(--radius-sm); overflow: hidden; margin-top: 14px; }
+.invoice-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: var(--paper);
+  border-bottom: 1px solid var(--line);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 12.5px;
+}
+.invoice table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.invoice td, .invoice th { padding: 7px 14px; }
+.invoice th {
+  font-family: var(--font-display);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  text-align: left;
+  border-bottom: 1px solid var(--line-soft);
+}
+.invoice td { border-bottom: 1px solid var(--line-soft); }
+.invoice .num { text-align: right; font-family: var(--font-mono); font-size: 12.5px; white-space: nowrap; }
+.invoice .total-row td {
+  border-bottom: none;
+  border-top: 1.5px solid var(--ink);
+  font-weight: 700;
+  font-family: var(--font-display);
+  padding-top: 9px;
+}
+.invoice .sub-row td { border-bottom: none; color: var(--ink-soft); padding-top: 8px; padding-bottom: 2px; }
+
+/* ---------------------------------------------------------------- composer (new prescription) */
+.composer-items { border: 1px solid var(--line); border-radius: var(--radius-sm); overflow: hidden; }
+.composer-items table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.composer-items th {
+  font-family: var(--font-display);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  text-align: left;
+  background: var(--paper);
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--line);
+}
+.composer-items td { padding: 8px 10px; border-bottom: 1px solid var(--line-soft); vertical-align: middle; }
+.composer-items tr:last-child td { border-bottom: none; }
+.composer-items input, .composer-items select { padding: 6px 8px; font-size: 13px; }
+.composer-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+  padding: 12px 14px;
+  background: var(--accent-wash);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+}
+.composer-total .amount { font-family: var(--font-mono); font-weight: 600; font-size: 16px; }
+
+.stock-note { font-size: 12px; color: var(--ink-soft); white-space: nowrap; }
+.stock-note.short { color: var(--danger); font-weight: 600; }
+
+/* ---------------------------------------------------------------- modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(24, 37, 48, 0.45);
+  display: none;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 4vh 16px;
+  z-index: 50;
+  overflow-y: auto;
+}
+.modal-overlay.open { display: flex; }
+.modal-card {
+  background: var(--sheet);
+  border-radius: 12px;
+  box-shadow: 0 18px 60px rgba(24, 37, 48, 0.28);
+  width: 100%;
+  max-width: 560px;
+  animation: modal-in 160ms ease;
+}
+.modal-card.wide { max-width: 720px; }
+@keyframes modal-in { from { transform: translateY(8px); opacity: 0; } to { transform: none; opacity: 1; } }
+.modal-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--line-soft);
+}
+.modal-head h3 { font-size: 15px; font-weight: 600; }
+.modal-body { padding: 18px; }
+.modal-foot { display: flex; justify-content: flex-end; gap: 10px; padding: 0 18px 18px; flex-wrap: wrap; }
+.modal-close {
+  appearance: none;
+  border: none;
+  background: none;
+  font-size: 20px;
+  line-height: 1;
+  color: var(--ink-soft);
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+.modal-close:hover { background: var(--line-soft); color: var(--ink); }
+
+/* ---------------------------------------------------------------- toast */
+#toast {
+  position: fixed;
+  bottom: 22px;
+  right: 22px;
+  z-index: 80;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 340px;
+}
+.toast {
+  background: var(--ink);
+  color: #fff;
+  font-size: 13.5px;
+  padding: 11px 15px;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+  animation: toast-in 180ms ease;
+}
+.toast.err { background: var(--danger); }
+@keyframes toast-in { from { transform: translateY(6px); opacity: 0; } to { transform: none; opacity: 1; } }
+
+/* ---------------------------------------------------------------- login */
+.login-wrap {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 28px 18px;
+  gap: 20px;
+}
+.login-brand { text-align: center; }
+.login-brand h1 { font-size: 24px; font-weight: 700; margin-top: 12px; letter-spacing: 0.01em; }
+.login-brand p { color: var(--ink-soft); font-size: 13px; letter-spacing: 0.16em; text-transform: uppercase; font-family: var(--font-display); font-weight: 600; }
+.login-card { width: 100%; max-width: 380px; padding: 22px; display: flex; flex-direction: column; gap: 14px; }
+.login-card .btn { width: 100%; padding: 10px; font-size: 14px; }
+.login-foot { color: var(--ink-soft); font-size: 12px; }
+
+/* ---------------------------------------------------------------- patient detail */
+.patient-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; flex-wrap: wrap; }
+.patient-head h2 { font-size: 19px; font-weight: 700; }
+.patient-facts { display: flex; gap: 20px; flex-wrap: wrap; margin-top: 6px; font-size: 13px; color: var(--ink-soft); }
+.patient-facts b { color: var(--ink); font-weight: 600; }
+.visit-list { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
+.visit-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 12px 15px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--sheet);
+  cursor: pointer;
+}
+.visit-card:hover { border-color: var(--accent); background: var(--accent-wash); }
+.visit-main { display: flex; flex-direction: column; gap: 2px; min-width: 200px; }
+.visit-main .line1 { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+.visit-main .diag { font-weight: 600; }
+.visit-side { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+
+/* ---------------------------------------------------------------- responsive & motion */
+@media (max-width: 700px) {
+  .form-grid { grid-template-columns: 1fr; }
+  .form-grid .span-2 { grid-column: span 1; }
+  .rx-meta { grid-template-columns: repeat(2, auto); }
+  .page { padding: 16px 14px 48px; }
+  .topbar { padding: 10px 14px; }
+  .tabs { padding: 0 8px; }
+  .user-chip .sub { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+
+/* ---------------------------------------------------------------- admin & stock flags */
+
+/* Deactivated staff, and other rows that are present but not in play. */
+.row-muted > td { opacity: 0.55; }
+.row-muted .med-name { text-decoration: line-through; }
+
+.pill-off { color: var(--ink-soft); background: var(--line-soft); }
+
+/* Medicine a doctor added that the pharmacy has not priced yet. */
+.badge-pricing { color: var(--pending); background: var(--pending-wash); }
+
+.row-actions { white-space: nowrap; text-align: right; }
+.row-actions .btn-quiet + .btn-quiet { margin-left: 4px; }
+
+/* Two-column modal form (add staff). */
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.form-grid .span-2 { grid-column: 1 / -1; }
+@media (max-width: 560px) {
+  .form-grid { grid-template-columns: 1fr; }
+}
+
+/* Banner shown while editing an existing prescription. */
+.edit-banner {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; flex-wrap: wrap;
+  margin-bottom: 12px; padding: 9px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--accent);
+  background: var(--accent-wash);
+  color: var(--accent-deep);
+  font-size: 13px;
+}
+
+/* Warning strip inside the prescription composer. */
+.composer-warn {
+  margin-top: 10px;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  color: var(--pending);
+  background: var(--pending-wash);
+  font-size: 13px;
+}
+.composer-warn:empty { display: none; }
+
+
+/* ---------------------------------------------------------------- lab tests, chips, auto-quantity */
+
+.btn-quiet.danger { color: var(--danger); }
+.btn-quiet.danger:hover { background: var(--danger-wash); }
+
+/* Chosen tests on the composer. */
+.chip-list { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 6px; }
+.chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  border: 1px solid var(--line); background: var(--sheet);
+  border-radius: 999px; padding: 4px 6px 4px 12px; font-size: 13px;
+}
+.chip button {
+  appearance: none; border: 0; background: none; cursor: pointer;
+  color: var(--ink-soft); font-size: 13px; line-height: 1;
+  padding: 3px 5px; border-radius: 999px;
+}
+.chip button:hover { background: var(--danger-wash); color: var(--danger); }
+
+/* Test picker inside the modal. */
+.test-picker { max-height: 46vh; overflow-y: auto; border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 6px 10px; }
+.test-group + .test-group { margin-top: 10px; }
+.test-group-name {
+  font-family: var(--font-display); font-size: 11px; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft);
+  padding: 6px 0 4px; position: sticky; top: 0; background: var(--sheet);
+}
+/* Checkbox aligns with the first line of the label, so a test name that wraps
+   still reads correctly. 3px nudges the 16px box onto the 21px line box. */
+.test-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 5px 6px;
+  cursor: pointer;
+  border-radius: 6px;
+  line-height: 1.5;
+}
+.test-option:hover { background: var(--accent-wash); }
+.test-option input { margin-top: 3px; }
+.test-option span { flex: 1; min-width: 0; }
+
+/* "auto" marker beside a calculated quantity. The cell is a flex row so the
+   badge can never spill out of the column and onto the remove button. */
+.freq-cell { display: flex; flex-direction: column; gap: 5px; }
+.qty-cell { display: flex; align-items: center; gap: 6px; }
+.qty-cell input { flex: 1 1 auto; min-width: 0; }
+.qty-auto {
+  flex: none;
+  font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+
+/* ---------------------------------------------------------------- print
+   Printing is how a bill or prescription is saved as a PDF: the browser's
+   dialog offers "Save as PDF" alongside the printer. `body.printing` is set
+   by printModal() just before window.print(), so what prints is the open
+   Rx pad or invoice on its own — no app chrome, no page behind it. */
+
+.print-only { display: none; }
+.screen-only { display: block; }
+
+.letterhead { text-align: center; margin-bottom: 14px; }
+.letterhead-name { font-family: var(--font-display); font-size: 19px; font-weight: 700; }
+.letterhead-sub { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); }
+.letterhead-line { font-size: 11px; color: var(--ink-soft); margin-top: 2px; }
+.invoice-patient { display: flex; justify-content: space-between; gap: 12px; font-size: 12px; margin-bottom: 8px; }
+.invoice-doctor { display: flex; flex-direction: column; align-items: flex-end; line-height: 1.35; }
+
+@media print {
+  /* A zero page margin is what suppresses the browser's own header and footer
+     (the page URL, date and page number). The margins are re-created below so
+     the sheet still sits properly on the paper. */
+  @page { size: A4; margin: 0; }
+
+  html, body { background: #fff !important; }
+  body { font-size: 11.5pt; }
+
+  /* Never print mid-animation: the modal fades in from opacity 0, and printing
+     the moment it opens would otherwise capture a blank sheet. */
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+    opacity: 1 !important;
+  }
+
+  .print-only { display: block; }
+  .invoice-patient.print-only { display: flex; }
+  .screen-only { display: none !important; }
+
+  /* Chrome and controls never print. */
+  .topbar, .tabs, #toast, .modal-head, .modal-foot,
+  .btn, .btn-ghost, .btn-quiet, .btn-sm, .search-input, .seg,
+  .section-tools, .modal-close { display: none !important; }
+
+  /* Printing from a modal: drop the app behind it and flatten the overlay
+     into an ordinary block so the sheet flows across pages. */
+  body.printing > .topbar,
+  body.printing > .tabs,
+  body.printing > .page { display: none !important; }
+
+  body.printing .modal-overlay {
+    position: static !important;
+    display: block !important;
+    background: none !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+  body.printing .modal-card,
+  body.printing .modal-card.wide {
+    box-shadow: none !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    max-width: none !important;
+    width: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+  body.printing .modal-body {
+    padding: 14mm 14mm 24mm !important;   /* the page margin, plus room for the footer */
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  .print-footer {
+    display: block;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 4mm 14mm 6mm;
+    text-align: center;
+    font-size: 8.5pt;
+    line-height: 1.35;
+    color: var(--ink-soft);
+    border-top: 1px solid var(--line);
+  }
+
+  /* The two printable documents. */
+  .rx-pad, .invoice {
+    box-shadow: none !important;
+    border: 0 !important;
+    margin: 0 !important;
+    break-inside: auto;
+  }
+  .rx-water { display: none !important; }        /* watermark wastes toner */
+  .rx-qty { display: none !important; }          /* quantity is not printed on the prescription */
+  .qty-auto, .chip button { display: none !important; }
+  .invoice { margin-top: 18px !important; page-break-before: always; }
+  .rx-pad + .invoice { page-break-before: always; }
+
+  table { break-inside: auto; }
+  thead { display: table-header-group; }         /* repeat headers across pages */
+  tr { break-inside: avoid; }
+
+  .card, .table-scroll { overflow: visible !important; box-shadow: none !important; }
+  a[href]::after { content: ""; }                /* no URL footnotes */
+}

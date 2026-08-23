@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pharmacy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Public+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body data-role="pharmacist" data-page-title="Pharmacy">
+  <header class="topbar">
+    <div class="brand">
+      <span class="rx-mark">R<sub>x</sub></span>
+      <span class="brand-name" data-clinic-name>Clinic</span>
+      <span class="brand-tag">Pharmacy</span>
+    </div>
+    <div class="topbar-user">
+      <div class="user-chip">
+        <div class="name" id="tb-name"></div>
+        <div class="sub"><span class="role-pill" id="tb-role"></span></div>
+      </div>
+      <button class="btn-quiet" id="tb-logout" type="button">Sign out</button>
+    </div>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button class="tab" role="tab" data-tab="queue" aria-selected="true">Pending queue</button>
+    <button class="tab" role="tab" data-tab="inventory" aria-selected="false">Inventory</button>
+    <button class="tab" role="tab" data-tab="bills" aria-selected="false">Bills</button>
+  </nav>
+
+  <main class="page">
+    <!-- ============================ Pending queue ============================ -->
+    <section id="tab-queue" data-section>
+      <div class="section-head">
+        <h2>Prescriptions waiting</h2>
+        <button class="btn-ghost btn-sm" id="queue-refresh" type="button">Refresh</button>
+      </div>
+      <div class="card">
+        <div class="table-scroll">
+          <table class="data">
+            <thead>
+              <tr>
+                <th>Rx No.</th><th>Received</th><th>Patient</th><th>Doctor</th>
+                <th>Diagnosis</th><th class="num" style="text-align:right">Items</th><th></th>
+              </tr>
+            </thead>
+            <tbody id="queue-tbody"></tbody>
+          </table>
+        </div>
+        <div id="queue-empty" class="empty" hidden>
+          <strong>Queue is clear</strong>
+          New prescriptions from the doctors will appear here automatically.
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ Inventory ============================ -->
+    <section id="tab-inventory" data-section hidden>
+      <div class="section-head">
+        <h2>Medicine inventory</h2>
+        <div class="section-tools">
+          <input class="search-input" id="med-search" type="search" placeholder="Search medicine" />
+          <button class="btn-ghost btn-sm" id="med-removed-toggle" type="button" aria-pressed="false">Show removed</button>
+          <button class="btn" id="add-med-btn" type="button">Add medicine</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="table-scroll">
+          <table class="data">
+            <thead>
+              <tr>
+                <th>Medicine</th><th>Category</th>
+                <th class="num" style="text-align:right">Unit price</th>
+                <th class="num" style="text-align:right">Stock</th>
+                <th>Status</th><th></th>
+              </tr>
+            </thead>
+            <tbody id="med-tbody"></tbody>
+          </table>
+        </div>
+        <div id="med-empty" class="empty" hidden>
+          <strong>No medicines found</strong>
+          Try a different search, or add a new medicine.
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ Bills ============================ -->
+    <section id="tab-bills" data-section hidden>
+      <div class="section-head">
+        <h2>Bills</h2>
+      </div>
+      <div class="card">
+        <div class="table-scroll">
+          <table class="data">
+            <thead>
+              <tr>
+                <th>Bill No.</th><th>Date</th><th>Rx No.</th><th>Patient</th><th>Doctor</th>
+                <th class="num" style="text-align:right">Amount</th>
+              </tr>
+            </thead>
+            <tbody id="bills-tbody"></tbody>
+          </table>
+        </div>
+        <div id="bills-empty" class="empty" hidden>
+          <strong>No bills yet</strong>
+          Issue a pending prescription to generate the first bill.
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Suggestions the admin maintains; any other value can still be typed. -->
+  <datalist id="category-list"></datalist>
+
+  <div class="modal-overlay" id="modal"><div class="modal-card"></div></div>
+  <div id="toast" aria-live="polite"></div>
+
+  <script src="/js/common.js"></script>
+  <script src="/js/pharmacy.js"></script>
+</body>
+</html>
