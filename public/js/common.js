@@ -351,7 +351,7 @@ function renderRxPad(rx, { showBill = true } = {}) {
       <td>${esc(it.frequency)}</td>
       <td class="num">${it.durationDays} day${it.durationDays > 1 ? 's' : ''}</td>
       <td class="num rx-qty">${it.quantity}</td>
-      ${rx.status === 'issued' ? `<td class="num">${it.issuedQuantity != null ? it.issuedQuantity : '—'}</td>` : ''}
+      ${rx.status === 'issued' ? `<td class="num rx-qty">${it.issuedQuantity != null ? it.issuedQuantity : '—'}</td>` : ''}
     </tr>`).join('');
 
   return `
@@ -392,7 +392,7 @@ function renderRxPad(rx, { showBill = true } = {}) {
             <th style="width:150px">Frequency</th>
             <th style="width:72px;text-align:right">Duration</th>
             <th class="rx-qty" style="width:56px;text-align:right">Qty</th>
-            ${rx.status === 'issued' ? '<th style="width:62px;text-align:right">Issued</th>' : ''}
+            ${rx.status === 'issued' ? '<th class="rx-qty" style="width:62px;text-align:right">Issued</th>' : ''}
           </tr>
         </thead>
         <tbody>${itemsRows}</tbody>
@@ -448,7 +448,8 @@ function renderInvoice(bill) {
         <tbody>
           ${lines}
           <tr class="sub-row"><td colspan="3">Medicines total</td><td class="num">${fmtMoney(bill.medicinesTotal)}</td></tr>
-          <tr class="sub-row"><td colspan="3">Consultation fee</td><td class="num">${fmtMoney(bill.consultationFee)}</td></tr>
+          ${bill.consultationFee > 0 ? `
+            <tr class="sub-row"><td colspan="3">Consultation fee</td><td class="num">${fmtMoney(bill.consultationFee)}</td></tr>` : ''}
           <tr class="total-row"><td colspan="3">Grand total</td><td class="num">${fmtMoney(bill.grandTotal)}</td></tr>
         </tbody>
       </table>

@@ -846,8 +846,10 @@ tr.out-row td { background: var(--danger-wash); }
   .rx-water { display: none !important; }        /* watermark wastes toner */
   .rx-qty { display: none !important; }          /* quantity is not printed on the prescription */
   .qty-auto, .chip button { display: none !important; }
-  .invoice { margin-top: 18px !important; page-break-before: always; }
-  .rx-pad + .invoice { page-break-before: always; }
+  .rx-pad + .invoice {
+    margin-top: 18px !important;
+    page-break-before: always;
+  }
 
   table { break-inside: auto; }
   thead { display: table-header-group; }         /* repeat headers across pages */
