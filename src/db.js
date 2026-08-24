@@ -18,7 +18,7 @@ const stmtCache = new Map();
  */
 const ADMIN = {
   username: (process.env.OPD_ADMIN_USER || 'admin').toLowerCase(),
-  password: process.env.OPD_ADMIN_PASS || 'admin123',
+  password: process.env.OPD_ADMIN_PASS || 'maya@1968',
   name: 'Clinic Administrator',
 };
 

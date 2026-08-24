@@ -37,6 +37,32 @@ because a new database is seeded with a demo clinic. Start with
 
 Override the admin credentials with `OPD_ADMIN_USER` and `OPD_ADMIN_PASS`.
 
+## Deploy to Render
+
+This application needs a persistent disk because its database is a writable
+SQLite file. Do not deploy it to an ephemeral filesystem: clinic records would
+be lost on a restart or could diverge across instances. The included
+`render.yaml` creates one Render web service with an encrypted persistent disk
+mounted at `/var/data`.
+
+1. Push this repository to GitHub or GitLab.
+2. In the [Render Dashboard](https://dashboard.render.com), choose **New → Blueprint**
+  and connect the repository.
+3. When prompted, set `OPD_ADMIN_USER` and a strong `OPD_ADMIN_PASS`. Do not use
+  the local defaults on a public deployment.
+4. Apply the Blueprint and wait for the health check to pass. Open the generated
+  `onrender.com` URL and sign in with the admin credentials from step 3.
+
+The production service uses `OPD_SEED=clean`, so it starts with only the admin;
+create doctors and pharmacists from Administration. Its live database is
+`/var/data/opd.db`, and application backups are written to `/var/data/backups`.
+Render also snapshots the attached disk daily.
+
+Persistent disks require a paid Render web service. Keep the service at one
+instance: SQLite and an attached disk cannot be safely shared across multiple
+instances. Deploys have a few seconds of downtime while Render moves the disk
+to the new process.
+
 ## What's inside
 
 **Administration portal**

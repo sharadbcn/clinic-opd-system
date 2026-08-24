@@ -1,0 +1,26 @@
+services:
+  - type: web
+    runtime: node
+    name: clinic-opd-system
+    region: singapore
+    plan: starter
+    numInstances: 1
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /api/settings
+    autoDeployTrigger: checksPass
+    envVars:
+      - key: OPD_DB_PATH
+        value: /var/data/opd.db
+      - key: OPD_BACKUP_DIR
+        value: /var/data/backups
+      - key: OPD_SEED
+        value: clean
+      - key: OPD_ADMIN_USER
+        sync: false
+      - key: OPD_ADMIN_PASS
+        sync: false
+    disk:
+      name: clinic-data
+      mountPath: /var/data
+      sizeGB: 1
