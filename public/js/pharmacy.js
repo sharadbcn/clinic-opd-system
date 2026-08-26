@@ -94,6 +94,7 @@ function renderInventory() {
       <td style="text-align:right;white-space:nowrap">${m.hidden ? `
         <button class="btn-quiet btn-sm" data-act="restore" data-id="${m.id}" type="button">Restore</button>` : `
         <button class="btn-ghost btn-sm" data-act="restock" data-id="${m.id}" type="button">Restock</button>
+        <button class="btn-quiet btn-sm" data-act="edit" data-id="${m.id}" type="button">Edit</button>
         <button class="btn-quiet btn-sm" data-act="price" data-id="${m.id}" type="button">Price</button>
         <button class="btn-quiet btn-sm danger" data-act="remove" data-id="${m.id}" type="button">Remove</button>`}
       </td>
@@ -103,11 +104,57 @@ function renderInventory() {
     b.addEventListener('click', () => {
       const med = state.medicines.find((m) => String(m.id) === String(b.dataset.id));
       if (b.dataset.act === 'restock') openRestockModal(med);
+      else if (b.dataset.act === 'edit') openMedicineEditModal(med);
       else if (b.dataset.act === 'remove') removeMedicine(med);
       else if (b.dataset.act === 'restore') restoreMedicine(med);
       else openPriceModal(med);
     })
   );
+}
+
+function openMedicineEditModal(med) {
+  openModal(`
+    <div class="modal-head"><h3>Edit medicine</h3><button class="modal-close" data-close aria-label="Close">×</button></div>
+    <form class="modal-body form-grid" id="edit-med-form" autocomplete="off">
+      <div class="field span-2"><label for="edit-med-name">Name (with strength)</label><input id="edit-med-name" required value="${esc(med.name)}" /></div>
+      <div class="field span-2"><label for="edit-med-category">Category</label><input id="edit-med-category" list="category-list" value="${esc(med.category)}" /></div>
+      <div class="field span-2"><label for="edit-med-price">Unit price (₹)</label><input id="edit-med-price" type="number" min="0" step="0.01" required value="${med.unitPrice}" /></div>
+      <p class="muted small span-2">New prescriptions and bills use these details. Existing bills are unchanged.</p>
+      <div id="edit-med-error" class="form-error span-2" role="alert"></div>
+    </form>
+    <div class="modal-foot">
+      <button class="btn-ghost" data-close type="button">Cancel</button>
+      <button class="btn" id="edit-med-save" type="button">Save changes</button>
+    </div>`);
+
+  const submit = async () => {
+    const errBox = document.getElementById('edit-med-error');
+    const button = document.getElementById('edit-med-save');
+    errBox.classList.remove('show');
+    button.disabled = true;
+    try {
+      const { medicine } = await api('/medicines/' + med.id, {
+        method: 'PATCH',
+        body: {
+          name: document.getElementById('edit-med-name').value,
+          category: document.getElementById('edit-med-category').value,
+          unitPrice: document.getElementById('edit-med-price').value,
+        },
+      });
+      closeModal();
+      toast(`${medicine.name} updated`);
+      loadInventory();
+    } catch (err) {
+      errBox.textContent = err.message;
+      errBox.classList.add('show');
+      button.disabled = false;
+    }
+  };
+  document.getElementById('edit-med-save').addEventListener('click', submit);
+  document.getElementById('edit-med-form').addEventListener('submit', (event) => {
+    event.preventDefault();
+    submit();
+  });
 }
 
 async function removeMedicine(med) {

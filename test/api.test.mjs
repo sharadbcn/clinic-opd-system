@@ -508,6 +508,28 @@ test('a pharmacist adding a medicine still sets price and stock normally', async
   assert.equal(res.data.medicine.needsPricing, false);
 });
 
+test('a pharmacist can edit a medicine name, category and price', async () => {
+  const added = await api('/medicines', {
+    method: 'POST', token: ctx.pharma,
+    body: { name: 'Correction Test Tablet', category: 'General', unitPrice: 4, stock: 20 },
+  });
+  assert.equal(added.status, 201, JSON.stringify(added.data));
+
+  const edited = await api(`/medicines/${added.data.medicine.id}`, {
+    method: 'PATCH', token: ctx.pharma,
+    body: { name: 'Corrected Test Tablet', category: 'Analgesic', unitPrice: 6.25 },
+  });
+  assert.equal(edited.status, 200, JSON.stringify(edited.data));
+  assert.equal(edited.data.medicine.name, 'Corrected Test Tablet');
+  assert.equal(edited.data.medicine.category, 'Analgesic');
+  assert.equal(edited.data.medicine.unitPrice, 6.25);
+  assert.equal(edited.data.medicine.stock, 20, 'editing details must not change stock');
+
+  const listed = (await api('/medicines', { token: ctx.pharma })).data.medicines;
+  assert.ok(listed.some((medicine) => medicine.id === added.data.medicine.id &&
+    medicine.name === 'Corrected Test Tablet'));
+});
+
 // ---------------------------------------------------------------- clinic settings
 test('settings are readable without signing in — the login page needs the clinic name', async () => {
   const { status, data } = await api('/settings');

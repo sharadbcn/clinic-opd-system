@@ -133,7 +133,7 @@ to the new process.
 - Pending queue (auto-refreshes) — review each prescription, adjust issue
   quantities (capped at the prescribed amount **and** current stock, partial
   issue allowed), and generate the bill in one step
-- Inventory: add medicines, restock, update prices; low-stock, out-of-stock and
+- Inventory: add medicines, correct names and categories, restock, update prices; low-stock, out-of-stock and
   "needs pricing" rows are flagged
 - **Remove a medicine** — hides it from prescribing and the inventory. Past
   bills are untouched and a pending prescription containing it can still be
