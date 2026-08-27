@@ -76,6 +76,9 @@ to the new process.
 - **Clinic details** — name, address, phone, email and registration number.
   The name replaces "Sunrise Clinic" throughout the app; the rest is printed on
   every bill and prescription
+- **Clinic logo** — upload a PNG, JPEG or WebP in Administration → Clinic. It is
+  resized and stored with the clinic database, then printed on prescriptions
+  and medical bills
 - **Dropdown suggestions** — doctor specialties, medicine categories and
   prescription frequencies. These are suggestions only: staff can always type a
   value that isn't listed, so a missing option never blocks anyone
@@ -170,6 +173,9 @@ The clinic's name, address, phone, email and registration number print along the
 **foot of every page**. Each field appears only when you have filled it in, so a
 clinic with just a name prints just the name. Set them in
 Administration → Clinic.
+
+The clinic logo appears beside the clinic name on prescriptions and above the
+letterhead on bills. Upload or remove it in Administration → Clinic.
 
 The page is printed with a zero page margin and its own margins in CSS, which is
 what stops the browser adding its own header and footer — the page URL, date and

@@ -96,6 +96,17 @@
             <label for="c-regno">Registration number</label>
             <input id="c-regno" maxlength="120" placeholder="MH/CLIN/2019/4471" />
           </div>
+          <div class="field span-2">
+            <label for="c-logo">Clinic logo</label>
+            <div class="clinic-logo-control">
+              <div class="clinic-logo-preview" id="c-logo-preview"><span>No logo</span></div>
+              <div class="clinic-logo-actions">
+                <input id="c-logo" type="file" accept="image/png,image/jpeg,image/webp" />
+                <p class="muted small">PNG, JPEG or WebP, up to 3 MB. It is resized for prescriptions and bills.</p>
+                <button class="btn-quiet btn-sm" id="c-logo-remove" type="button">Remove logo</button>
+              </div>
+            </div>
+          </div>
         </div>
         <div id="clinic-error" class="form-error" role="alert"></div>
         <div style="display:flex;justify-content:flex-end;margin-top:14px">

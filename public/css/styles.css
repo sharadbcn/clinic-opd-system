@@ -245,6 +245,17 @@ textarea { resize: vertical; min-height: 64px; }
 input[type="number"] { font-family: var(--font-mono); }
 .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
 .form-grid .span-2 { grid-column: span 2; }
+.clinic-logo-control { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.clinic-logo-preview {
+  width: 180px; height: 90px; flex: none;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px dashed var(--line); border-radius: var(--radius-sm); background: var(--paper);
+  color: var(--ink-soft); font-size: 12px; overflow: hidden;
+}
+.clinic-logo-preview img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.clinic-logo-actions { flex: 1 1 240px; min-width: 0; }
+.clinic-logo-actions input { width: 100%; }
+.clinic-logo-actions p { margin: 6px 0; }
 .form-error {
   display: none;
   background: var(--danger-wash);
@@ -372,6 +383,8 @@ tr.out-row td { background: var(--danger-wash); }
 }
 .rx-water sub { font-size: 48px; }
 .rx-clinic-row { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+.rx-clinic-identity { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.rx-clinic-logo { width: 52px; height: 52px; flex: none; object-fit: contain; }
 .rx-clinic {
   font-family: var(--font-display);
   font-weight: 700;
@@ -761,6 +774,9 @@ tr.out-row td { background: var(--danger-wash); }
 .screen-only { display: block; }
 
 .letterhead { text-align: center; margin-bottom: 14px; }
+.letterhead-main { display: flex; align-items: center; justify-content: center; gap: 3mm; }
+.letterhead-logo { display: block; width: auto; max-width: 24mm; height: auto; max-height: 16mm; object-fit: contain; }
+.letterhead-copy { display: flex; flex-direction: column; align-items: flex-start; text-align: left; }
 .letterhead-name { font-family: var(--font-display); font-size: 19px; font-weight: 700; }
 .letterhead-sub { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); }
 .letterhead-line { font-size: 11px; color: var(--ink-soft); margin-top: 2px; }
@@ -783,6 +799,7 @@ tr.out-row td { background: var(--danger-wash); }
     transition: none !important;
     opacity: 1 !important;
   }
+  .rx-clinic-logo, .letterhead-logo { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
 
   .print-only { display: block; }
   .invoice-patient.print-only { display: flex; }
@@ -821,6 +838,8 @@ tr.out-row td { background: var(--danger-wash); }
     max-height: none !important;
     overflow: visible !important;
   }
+  body.printing .bill-print-body,
+  body.printing .modal-body:has(> .invoice:first-child) { padding-top: 4mm !important; }
 
   .print-footer {
     display: block;

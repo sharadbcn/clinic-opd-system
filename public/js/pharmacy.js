@@ -310,8 +310,8 @@ async function openBillModal(id) {
       <h3>Bill <span class="mono">${esc(bill.billNumber)}</span></h3>
       <button class="modal-close" data-close aria-label="Close">×</button>
     </div>
-    <div class="modal-body">
-      <div class="rx-diagnosis" style="margin-bottom:10px">
+    <div class="modal-body bill-print-body">
+      <div class="rx-diagnosis screen-only" style="margin-bottom:10px">
         <b>${esc(p.name || '')}</b> <span class="mono muted">${esc(p.code || '')}</span>
         · Prescribed by ${esc(bill.doctorName)}
         · <button class="btn-quiet btn-sm" id="bill-view-rx" type="button" style="padding:2px 6px">View <span class="mono">${esc(bill.rxNumber)}</span></button>

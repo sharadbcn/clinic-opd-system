@@ -58,7 +58,7 @@ async function api(path, { method = 'GET', body } = {}) {
 /* Fetched once per page load. The clinic name and letterhead are set by the
    admin, so nothing about the clinic is hardcoded in the markup. */
 let settings = {
-  clinic: { name: 'Clinic', address: '', phone: '', email: '', regNo: '' },
+  clinic: { name: 'Clinic', address: '', phone: '', email: '', regNo: '', logoDataUrl: '' },
   lists: { specialties: [], categories: [], frequencies: [] },
 };
 
@@ -84,9 +84,19 @@ function applyClinicBranding() {
 function clinicLetterhead() {
   return `
     <div class="letterhead print-only">
-      <div class="letterhead-name">${esc(settings.clinic.name)}</div>
-      <div class="letterhead-sub">Outpatient Department</div>
+      <div class="letterhead-main">
+        ${clinicLogo('letterhead-logo')}
+        <div class="letterhead-copy">
+          <div class="letterhead-name">${esc(settings.clinic.name)}</div>
+          <div class="letterhead-sub">Outpatient Department</div>
+        </div>
+      </div>
     </div>`;
+}
+
+function clinicLogo(className) {
+  if (!settings.clinic.logoDataUrl) return '';
+  return `<img class="${className}" src="${esc(settings.clinic.logoDataUrl)}" alt="${esc(settings.clinic.name)} logo" />`;
 }
 
 /**
@@ -358,7 +368,10 @@ function renderRxPad(rx, { showBill = true } = {}) {
     <div class="rx-pad">
       <div class="rx-water" aria-hidden="true">R<sub>x</sub></div>
       <div class="rx-clinic-row">
-        <div class="rx-clinic">${esc(settings.clinic.name)}<span>Outpatient Department</span></div>
+        <div class="rx-clinic-identity">
+          ${clinicLogo('rx-clinic-logo')}
+          <div class="rx-clinic">${esc(settings.clinic.name)}<span>Outpatient Department</span></div>
+        </div>
         <div class="rx-doctor">
           <div class="name">${esc(rx.doctor ? rx.doctor.name : '')}</div>
           ${rx.doctor && rx.doctor.specialty

@@ -536,7 +536,7 @@ test('settings are readable without signing in — the login page needs the clin
   assert.equal(status, 200);
   assert.equal(typeof data.settings.clinic.name, 'string');
   assert.ok(data.settings.clinic.name.length > 0);
-  for (const k of ['address', 'phone', 'email', 'regNo']) {
+  for (const k of ['address', 'phone', 'email', 'regNo', 'logoDataUrl']) {
     assert.equal(typeof data.settings.clinic[k], 'string', `clinic.${k} should always be present`);
   }
   for (const k of ['specialties', 'categories', 'frequencies']) {
@@ -586,6 +586,27 @@ test('a blank clinic name is rejected; other fields may be blank', async () => {
   const ok = await api('/settings', { method: 'PUT', token: ctx.admin, body: { clinic: { email: '' } } });
   assert.equal(ok.status, 200);
   assert.equal(ok.data.settings.clinic.name, 'Meadowbrook Family Clinic', 'a partial update must not reset other fields');
+});
+
+test('admin can set and clear a validated clinic logo', async () => {
+  const logoDataUrl = 'data:image/png;base64,iVBORw0KGgo=';
+  const saved = await api('/settings', {
+    method: 'PUT', token: ctx.admin, body: { clinic: { logoDataUrl } },
+  });
+  assert.equal(saved.status, 200, JSON.stringify(saved.data));
+  assert.equal(saved.data.settings.clinic.logoDataUrl, logoDataUrl);
+
+  const invalid = await api('/settings', {
+    method: 'PUT', token: ctx.admin,
+    body: { clinic: { logoDataUrl: 'data:image/svg+xml;base64,PHN2Zz4=' } },
+  });
+  assert.equal(invalid.status, 400);
+
+  const cleared = await api('/settings', {
+    method: 'PUT', token: ctx.admin, body: { clinic: { logoDataUrl: '' } },
+  });
+  assert.equal(cleared.status, 200);
+  assert.equal(cleared.data.settings.clinic.logoDataUrl, '');
 });
 
 test('admin edits the suggestion lists; doctors and pharmacists can read them', async () => {

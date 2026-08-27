@@ -5,7 +5,7 @@
  */
 const db = require('./db');
 
-const CLINIC_FIELDS = ['name', 'address', 'phone', 'email', 'regNo'];
+const CLINIC_FIELDS = ['name', 'address', 'phone', 'email', 'regNo', 'logoDataUrl'];
 const LIST_NAMES = ['specialties', 'categories', 'frequencies'];
 
 const DEFAULTS = {
@@ -15,6 +15,7 @@ const DEFAULTS = {
     phone: '',
     email: '',
     regNo: '',
+    logoDataUrl: '',
   },
   lists: {
     specialties: [
@@ -35,6 +36,7 @@ const DEFAULTS = {
 
 const MAX_TEXT = 120;
 const MAX_ADDRESS = 240;
+const MAX_LOGO_DATA_URL = 60000;
 const MAX_LIST = 60;
 
 /** Everything the app needs to render its letterhead and dropdowns. */
@@ -75,6 +77,17 @@ function update({ clinic, lists }) {
     }
     for (const field of CLINIC_FIELDS) {
       if (!(field in clinic)) continue;
+      if (field === 'logoDataUrl') {
+        const logo = String(clinic[field] || '').trim();
+        if (logo && !/^data:image\/(?:png|jpeg|webp);base64,[A-Za-z0-9+/]+=*$/.test(logo)) {
+          throw db.httpError(400, 'Clinic logo must be a PNG, JPEG or WebP image.');
+        }
+        if (logo.length > MAX_LOGO_DATA_URL) {
+          throw db.httpError(400, 'Clinic logo is too large. Choose a smaller image.');
+        }
+        db.setMeta('clinic.' + field, logo);
+        continue;
+      }
       const max = field === 'address' ? MAX_ADDRESS : MAX_TEXT;
       const text = cleanText(clinic[field], { field: field === 'regNo' ? 'Registration number' : `Clinic ${field}`, max });
       if (field === 'name' && !text) {

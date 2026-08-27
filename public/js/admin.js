@@ -312,13 +312,81 @@ const CLINIC_FIELDS = [['c-name', 'name'], ['c-address', 'address'], ['c-phone',
   ['c-email', 'email'], ['c-regno', 'regNo']];
 const LIST_FIELDS = [['l-specialties', 'specialties'], ['l-categories', 'categories'],
   ['l-frequencies', 'frequencies']];
+let clinicLogoDataUrl = '';
+
+function renderClinicLogoPreview() {
+  const preview = document.getElementById('c-logo-preview');
+  preview.innerHTML = clinicLogoDataUrl
+    ? `<img src="${clinicLogoDataUrl}" alt="Clinic logo preview" />`
+    : '<span>No logo</span>';
+  document.getElementById('c-logo-remove').hidden = !clinicLogoDataUrl;
+}
+
+function resizeClinicLogo(file) {
+  if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) {
+    return Promise.reject(new Error('Choose a PNG, JPEG or WebP image.'));
+  }
+  if (file.size > 3 * 1024 * 1024) {
+    return Promise.reject(new Error('Logo file must be 3 MB or smaller.'));
+  }
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    const objectUrl = URL.createObjectURL(file);
+    image.onload = () => {
+      URL.revokeObjectURL(objectUrl);
+      let scale = Math.min(1, 360 / image.naturalWidth, 160 / image.naturalHeight);
+      const canvas = document.createElement('canvas');
+      const context = canvas.getContext('2d');
+      let result = '';
+      for (let attempt = 0; attempt < 8; attempt += 1) {
+        canvas.width = Math.max(1, Math.round(image.naturalWidth * scale));
+        canvas.height = Math.max(1, Math.round(image.naturalHeight * scale));
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        context.drawImage(image, 0, 0, canvas.width, canvas.height);
+        result = canvas.toDataURL('image/webp', Math.max(0.45, 0.88 - attempt * 0.06));
+        if (result.length <= 60000) break;
+        scale *= 0.82;
+      }
+      if (result.length > 60000) reject(new Error('Logo could not be compressed enough. Choose a simpler image.'));
+      else resolve(result);
+    };
+    image.onerror = () => {
+      URL.revokeObjectURL(objectUrl);
+      reject(new Error('The selected image could not be read.'));
+    };
+    image.src = objectUrl;
+  });
+}
 
 async function loadClinicForms() {
   await loadSettings();
   loadTestCatalogue();
   CLINIC_FIELDS.forEach(([id, key]) => { document.getElementById(id).value = settings.clinic[key] || ''; });
+  clinicLogoDataUrl = settings.clinic.logoDataUrl || '';
+  renderClinicLogoPreview();
   LIST_FIELDS.forEach(([id, key]) => { document.getElementById(id).value = settings.lists[key].join('\n'); });
 }
+
+document.getElementById('c-logo').addEventListener('change', async (event) => {
+  const file = event.target.files[0];
+  if (!file) return;
+  const errBox = document.getElementById('clinic-error');
+  errBox.classList.remove('show');
+  try {
+    clinicLogoDataUrl = await resizeClinicLogo(file);
+    renderClinicLogoPreview();
+  } catch (err) {
+    event.target.value = '';
+    errBox.textContent = err.message;
+    errBox.classList.add('show');
+  }
+});
+
+document.getElementById('c-logo-remove').addEventListener('click', () => {
+  clinicLogoDataUrl = '';
+  document.getElementById('c-logo').value = '';
+  renderClinicLogoPreview();
+});
 
 /** Saves a settings form, showing the server's message on failure. */
 async function saveSettings(body, { errorId, buttonId, message }) {
@@ -343,6 +411,7 @@ document.getElementById('clinic-form').addEventListener('submit', (e) => {
   e.preventDefault();
   const clinic = {};
   CLINIC_FIELDS.forEach(([id, key]) => { clinic[key] = document.getElementById(id).value; });
+  clinic.logoDataUrl = clinicLogoDataUrl;
   saveSettings({ clinic }, { errorId: 'clinic-error', buttonId: 'clinic-save', message: 'Clinic details saved' });
 });
 
